@@ -24,7 +24,12 @@ RUN dpkg --add-architecture i386 \
     && apt-get clean \
     && apt-get autoremove
 
-RUN curl $(curl -s "https://supportcenter.checkpoint.com/supportcenter/portal/user/anon/page/default.psml/media-type/html?action=portlets.DCFileAction&eventSubmit_doGetdcdetails=&fileid=22824" | grep -Pzo -m 1 "<a onclick=.{10,60}?href=\"\K.*?(?=\">\s*<button.{0,20}?>Download<\/button>)") -o snx_install_linux30.sh
+ARG DOWNLOAD_URL="https://supportcenter.checkpoint.com/supportcenter/portal/user/anon/page/default.psml/media-type/html?action=portlets.DCFileAction&eventSubmit_doGetdcdetails=&fileid=22824"
+
+RUN curl $( \
+        curl -s DOWNLOAD_URL \
+        | grep -Pzo -m 1 "<a onclick=.{10,60}?href=\"\K.*?(?=\">\s*<button.{0,20}?>Download<\/button>)") \
+    -o snx_install_linux30.sh
 
 RUN bash -x snx_install_linux30.sh
 
