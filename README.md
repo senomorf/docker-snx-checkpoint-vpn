@@ -19,6 +19,11 @@ Client for Checkpoint VPN using snx GNU/Linux client. It accepts username and/or
 
 # For the impatients
 
+0. Build the container
+```
+docker build --pull -t vpn/checkpoint .
+```
+
 ## With username
 
 1. Run the container
@@ -28,12 +33,12 @@ Client for Checkpoint VPN using snx GNU/Linux client. It accepts username and/or
 ```
 docker run --name snx-vpn \
   --cap-add=ALL \
-  -v /lib/modules:/lib/modules \
+  -v /lib/modules:/lib/modules:ro \
   -e SNX_SERVER=vpn_server_ip_address \
   -e SNX_USER=user \
   -e SNX_PASSWORD=secret \
   -t \
-  -d kedu/snx-checkpoint-vpn
+  -d vpn/checkpoint
 ```
 
 1.2. Subsequent times
@@ -46,19 +51,22 @@ docker start snx-vpn
 
 ```
 docker inspect --format '{{ .NetworkSettings.IPAddress }}' snx-vpn
-172.17.0.2
+172.17.0.3
 ```
 
 3. Add a route using previous step IP address as gateway
 
 ```
-sudo route add -net 10.20.30.0 gw 172.17.0.2 netmask 255.255.255.0
+ip r a 172.22.0.0/16 via 172.17.0.3
 ```
 
 4. Try to reach the server behind SNX VPN (in this example through SSH)
 
 ```
-ssh 10.20.30.40
+ping 172.22.168.13
+```
+```
+ping 172.22.159.185
 ```
 
 ## With username and certificate
@@ -70,13 +78,13 @@ ssh 10.20.30.40
 ```
 docker run --name snx-vpn \
   --cap-add=ALL \
-  -v /lib/modules:/lib/modules \
+  -v /lib/modules:/lib/modules:ro \
   -e SNX_SERVER=vpn_server_ip_address \
   -e SNX_USER=user \
   -e SNX_PASSWORD=secret \
   -v /path/to/my_snx_vpn_certificate.p12:/certificate.p12 \
   -t \
-  -d kedu/snx-checkpoint-vpn
+  -d vpn/checkpoint
 ```
 
 **IMPORTANT**: specify a volume with "/certificate.p12" as container path
@@ -114,12 +122,12 @@ ssh 10.20.30.40
 ```
 docker run --name snx-vpn \
   --cap-add=ALL \
-  -v /lib/modules:/lib/modules \
+  -v /lib/modules:/lib/modules:ro \
   -e SNX_SERVER=vpn_server_ip_address \
   -e SNX_PASSWORD=secret \
   -v /path/to/my_snx_vpn_certificate.p12:/certificate.p12 \
   -t \
-  -d kedu/snx-checkpoint-vpn
+  -d vpn/checkpoint
 ```
 
 **IMPORTANT**: specify a volume with "/certificate.p12" as container path
