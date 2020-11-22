@@ -34,9 +34,10 @@ docker build --pull -t vpn/checkpoint .
 docker run --name snx-vpn \
   --cap-add=NET_ADMIN \
   -v /lib/modules:/lib/modules:ro \
-  -e SNX_SERVER=vpn_server_ip_address \
+  -e SNX_SERVER=vpn_server \
   -e SNX_USER=user \
   -e SNX_PASSWORD=secret \
+  -e SNX_MANUAL_ROUTES=addr1/cidr1 addr2/cidr2 \
   -t \
   -d vpn/checkpoint
 ```
@@ -57,7 +58,11 @@ docker inspect --format '{{ .NetworkSettings.IPAddress }}' snx-vpn
 3. Add a route using previous step IP address as gateway
 
 ```
-ip r a 172.22.0.0/16 via 172.17.0.3
+ip r a 172.22.0.0/15 via 172.17.0.3
+```
+Windows:
+```
+route add 172.22.0.0 mask 255.254.0.0 10.142.201.152
 ```
 
 4. Try to reach the server behind SNX VPN (in this example through SSH)

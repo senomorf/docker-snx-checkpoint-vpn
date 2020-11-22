@@ -25,10 +25,11 @@ user=$SNX_USER
 password=$SNX_PASSWORD
 snx_command=""
 snx_additional_args=$SNX_ARGS
+snx_manual_routes=($SNX_MANUAL_ROUTES)
 certificate_path="/certificate.p12"
 
 if [ -f "$certificate_path" ]; then
-    if [ ! -z "$user" ]; then
+    if [ -n "$user" ]; then
         snx_command="snx -s $server -u $user -c $certificate_path $snx_additional_args"
     else
         snx_command="snx -s $server -c $certificate_path $snx_additional_args"
@@ -48,12 +49,20 @@ interact
 EOF
 
 snx_ip=$(ip a s tunsnx | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
-echo snx client ip: $snx_ip
+if [ -n "$snx_ip" ]; then
+  echo got snx client ip: "$snx_ip"
+else
+  echo unable to get snx client ip
+  exit 1
+fi
 
-echo adding NAT rule: SNAT to $snx_ip
-iptables -t nat -A POSTROUTING -o tunsnx -j SNAT --to-source $snx_ip
+echo adding NAT rule: SNAT to "$snx_ip"
+iptables -t nat -A POSTROUTING -o tunsnx -j SNAT --to-source "$snx_ip"
 
-echo adding additional route to 172.22.0.0/15 to fix some services might being unreachable by default
-ip r a 172.22.0.0/15 dev tunsnx src $snx_ip
+for manual_route in "${snx_manual_routes[@]}"
+do
+  echo creating additional route to "$manual_route"
+  ip r a "$manual_route" dev tunsnx src "$snx_ip"
+done
 
 /bin/bash
