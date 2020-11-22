@@ -37,8 +37,6 @@ else
     snx_command="snx -s $server -u $user $snx_additional_args"
 fi
 
-#ip r save > routes_original
-
 /usr/bin/expect <<EOF
 spawn $snx_command
 expect "*?assword:"
@@ -49,24 +47,13 @@ expect "SNX - connected."
 interact
 EOF
 
-# sleep 1
-
-#snx_ip=$(ip route get 172.23.0.0 | awk -F"src " 'NR==1{split($2,a," ");print a[1]}')
 snx_ip=$(ip a s tunsnx | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
-echo detected client ip: $snx_ip
-echo adding NAT rule
-iptables -t nat -A POSTROUTING -o tunsnx -j SNAT --to-source $snx_ip
-#iptables -A FORWARD -i eth0 -j ACCEPT &&
-echo adding additional route to 172.22.0.0/15 to fix unreachable services behind vpn
-ip r a 172.22.0.0/15 dev tunsnx src $snx_ip
+echo snx client ip: $snx_ip
 
-#ip r save > routes_original_with_snx &&
-#ip r flush table main &&
-#ip r restore < routes_original &&
-#ip r a 172.22.0.0/15 dev tunsnx src $snx_ip &&
-#ip r a 10.56.0.0/20 dev tunsnx &&
-#ip r a 192.168.150.0/23 dev tunsnx &&
-#ip r a 192.168.20.0/24 dev tunsnx &&
-#iptables -t nat -A POSTROUTING -o tunsnx -j MASQUERADE &&
+echo adding NAT rule: SNAT to $snx_ip
+iptables -t nat -A POSTROUTING -o tunsnx -j SNAT --to-source $snx_ip
+
+echo adding additional route to 172.22.0.0/15 to fix some services might being unreachable by default
+ip r a 172.22.0.0/15 dev tunsnx src $snx_ip
 
 /bin/bash
