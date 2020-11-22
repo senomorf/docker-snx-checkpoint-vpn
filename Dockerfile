@@ -19,21 +19,23 @@ RUN dpkg --add-architecture i386 \
         # libnss3-tools \ # not actually needed
         # jre dependency
         # default-jre-headless \ # not actually needed
-        # requirements?
-        bzip2 \
+        # snx client requires tun kernel module
         kmod \
+        # snx installer requirements
+        bzip2 \
+        curl \
         # snx.sh script requirements
         expect \
         iptables \
-        # tunnel debug utilities - remove when finished
-        #net-tools \
-        #netcat \
-        #tcpdump \
-        #dnsutils \
-        #nano \
-        curl \
-        #iproute2 \
-        #iputils-ping \
+        iproute2 \
+        gawk \
+        # tunnel debug utilities
+        # net-tools \
+        # netcat \
+        # tcpdump \
+        # dnsutils \
+        # nano \
+        # iputils-ping \
     && DEBIAN_FRONTEND=noninteractive \
         apt clean \
     && DEBIAN_FRONTEND=noninteractive \

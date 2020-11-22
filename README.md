@@ -32,7 +32,7 @@ docker build --pull -t vpn/checkpoint .
 
 ```
 docker run --name snx-vpn \
-  --cap-add=ALL \
+  --cap-add=NET_ADMIN \
   -v /lib/modules:/lib/modules:ro \
   -e SNX_SERVER=vpn_server_ip_address \
   -e SNX_USER=user \
