@@ -1,3 +1,5 @@
+#!/bin/bash
+
 server=$SNX_SERVER
 user=$SNX_USER
 password=$SNX_PASSWORD
