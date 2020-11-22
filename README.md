@@ -71,89 +71,7 @@ route add 172.22.0.0 mask 255.254.0.0 10.142.201.152
 ping 172.22.168.13
 ```
 ```
-ping 172.22.159.185
-```
-
-## With username and certificate
-
-1. Run the container
-
-1.1. First time
-
-```
-docker run --name snx-vpn \
-  --cap-add=ALL \
-  -v /lib/modules:/lib/modules:ro \
-  -e SNX_SERVER=vpn_server_ip_address \
-  -e SNX_USER=user \
-  -e SNX_PASSWORD=secret \
-  -v /path/to/my_snx_vpn_certificate.p12:/certificate.p12 \
-  -t \
-  -d vpn/checkpoint
-```
-
-**IMPORTANT**: specify a volume with "/certificate.p12" as container path
-
-1.2. Subsequent times
-
-```
-docker start snx-vpn
-```
-
-
-2. Get private IP address of docker container
-
-```
-docker inspect --format '{{ .NetworkSettings.IPAddress }}' snx-vpn
-172.17.0.2
-```
-
-3. Add a route using previous step IP address as gateway
-
-```
-sudo route add -net 10.20.30.0 gw 172.17.0.2 netmask 255.255.255.0
-```
-
-4. Try to reach the server behind SNX VPN (in this example through SSH)
-
-```
-ssh 10.20.30.40
-```
-
-## Without username and with certificate
-
-1. Run the container
-
-```
-docker run --name snx-vpn \
-  --cap-add=ALL \
-  -v /lib/modules:/lib/modules:ro \
-  -e SNX_SERVER=vpn_server_ip_address \
-  -e SNX_PASSWORD=secret \
-  -v /path/to/my_snx_vpn_certificate.p12:/certificate.p12 \
-  -t \
-  -d vpn/checkpoint
-```
-
-**IMPORTANT**: specify a volume with "/certificate.p12" as container path
-
-2. Get private IP address of docker container
-
-```
-docker inspect --format '{{ .NetworkSettings.IPAddress }}' snx-vpn
-172.17.0.2
-```
-
-3. Add a route using previous step IP address as gateway
-
-```
-sudo route add -net 10.20.30.0 gw 172.17.0.2 netmask 255.255.255.0
-```
-
-4. Try to reach the server behind SNX VPN (in this example through SSH)
-
-```
-ssh 10.20.30.40
+ssh 172.22.159.185
 ```
 
 # Environment Variables
@@ -174,15 +92,7 @@ Mandatory. String corresponding to the password of VPN client
 SNX_USER
 ```
 
-Optional if certificate volume has been provided, otherwise mandatory. String corresponding to the username of VPN client
-
-# Allowed volumes
-
-```
-/certificate.p12
-```
-
-A VPN client certificate. If present the SNX binary will be invoked with "-c" parameter pointing to this certificate file.
+Mandatory. String corresponding to the username of VPN client
 
 # Routes
 
