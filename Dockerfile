@@ -38,7 +38,7 @@ RUN dpkg --add-architecture i386 \
         # optionals for tunnel debug
         # net-tools \
         # iputils-ping \
-        # netcat \
+        netcat \
         # tcpdump \
         # dnsutils \
         # nano \
