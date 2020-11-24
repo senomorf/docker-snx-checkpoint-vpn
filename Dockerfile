@@ -37,10 +37,10 @@ RUN dpkg --add-architecture i386 \
 
         # optionals for tunnel debug
         # net-tools \
-        # iputils-ping \
+        iputils-ping \
         netcat \
         # tcpdump \
-        # dnsutils \
+        dnsutils \
         # nano \
 
     && DEBIAN_FRONTEND=noninteractive \
@@ -67,3 +67,6 @@ ADD scripts/snx.sh .
 RUN chmod +x snx.sh
 
 CMD ["/root/snx.sh"]
+
+HEALTHCHECK --interval=5s --timeout=2s --start-period=5s --retries=1 \
+    CMD ps aux | grep '[s]nx ' || exit 1

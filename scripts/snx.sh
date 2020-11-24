@@ -36,8 +36,4 @@ do
   ip r a "$manual_route" dev tunsnx src "$snx_ip"
 done
 
-# /bin/bash
-
-# tail -f -n 1000 snx.elg
-
 tail -f /dev/null
